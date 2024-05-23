@@ -99,7 +99,7 @@ class VideoReader(object):
             self.width, self.height = self.output_size
 
         # Read timestamps file
-        self.timestamps = np.loadtxt(self.timestamps_path).astype(np.int)
+        self.timestamps = np.loadtxt(self.timestamps_path).astype(int)
 
     def __enter__(self):
         assert(self.is_async)

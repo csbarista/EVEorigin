@@ -271,7 +271,7 @@ class EVESequencesBase(Dataset):
                                              is_async=False, output_size=output_size).get_frames()
 
         # Collect and return
-        subentry['timestamps'] = np.asarray(timestamps, dtype=np.int)
+        subentry['timestamps'] = np.asarray(timestamps, dtype=int)
         frames = (
             self.preprocess_screen_frames(frames)
             if source == 'screen' else
@@ -293,7 +293,7 @@ class EVESequencesBase(Dataset):
                         value,
                         pad_width=[(0, pad_len if i == 0 else 0) for i in range(value.ndim)],
                         mode='constant',
-                        constant_values=(False if value.dtype is np.bool else 0.0),
+                        constant_values=(False if value.dtype is bool else 0.0),
                     )
 
         return subentry
