@@ -66,6 +66,7 @@ class EVE(nn.Module):
         if config.refine_net_enabled and config.refine_net_load_pretrained:
             load_weights_for_instance(self.refine_net)
 
+# zidian key: ; value: batch x 30 x pic (x,y)
     def forward(self, full_input_dict, create_images=False, current_epoch=None):
         if self.training:  # pick first source
             assert len(full_input_dict) == 1  # for now say there's 1 training data source
@@ -227,11 +228,40 @@ class EVE(nn.Module):
                 output_dict['PoG_px_final'] = full_intermediate_dict['PoG_px_final']
                 output_dict['PoG_cm_final'] = full_intermediate_dict['PoG_cm_final']
 
+
+        print("11111111111111111111111")
+        print(output_dict['left_pupil_size'])
+        print("22222222222222222222222")
+        print(full_input_dict['left_p'])
+
+        print("33333333333333333333333")
+        print(output_dict['right_pupil_size'])
+        print("44444444444444444444444")
+        print(full_input_dict['right_p'])
+
+        l1 = output_dict['left_pupil_size']
+        l11 = full_input_dict['left_p']
+        l111 = torch.abs(l1-l11)
+        print("555")
+        print(torch.sum(l111))
+
+        l2 = output_dict['right_pupil_size']
+        l22 = full_input_dict['right_p']
+        l222 = torch.abs(l2-l22)
+        print("666")
+        print(torch.sum(l222))
+
+
         # Calculate all loss terms and metrics (scores)
         self.calculate_losses_and_metrics(full_input_dict, full_intermediate_dict, output_dict)
+        
 
         # Calculate the final combined (and weighted) loss
         full_loss = torch.zeros(()).to(device)
+
+        print('=============')
+        print(output_dict['loss_l1_left_pupil_size'])
+        print(output_dict['loss_l1_right_pupil_size'])
 
         # Add all losses for the eye network
         if 'loss_ang_left_g_initial' in output_dict:
@@ -250,7 +280,7 @@ class EVE(nn.Module):
                 output_dict['loss_l1_left_pupil_size'] +
                 output_dict['loss_l1_right_pupil_size']
             )
-
+        
         # Add all losses for the GazeRefineNet
         if 'loss_mse_PoG_cm_final' in output_dict:
             full_loss += config.loss_coeff_PoG_cm_final * output_dict['loss_mse_PoG_cm_final']
@@ -263,6 +293,7 @@ class EVE(nn.Module):
             full_loss += config.loss_coeff_heatmap_mse_final * output_dict['loss_mse_heatmap_final']
 
         output_dict['full_loss'] = full_loss
+        
 
         # Store away tensors for visualization
         if create_images:
@@ -323,6 +354,8 @@ class EVE(nn.Module):
                 output_dict['loss_l1_' + interm_key] = l1_loss(
                     intermediate_dict[interm_key], input_key, input_dict,
                 )
+            print('pppppppppppppppppppppppp')
+            print(output_dict['loss_l1_left_pupil_size'])
 
         # Left-right consistency
         if 'left_PoG_tobii' in input_dict and 'right_PoG_tobii' in input_dict:
@@ -458,8 +491,8 @@ class EVE(nn.Module):
         if self.training and config.refine_net_do_offset_augmentation:
 
             # Curriculum learning on kappa
-            assert(current_epoch is not None)
-            assert(isinstance(current_epoch, float))
+            # assert(current_epoch is not None)
+            # assert(isinstance(current_epoch, float))
             kappa_std = config.refine_net_offset_augmentation_sigma
             kappa_std = np.radians(kappa_std)
 

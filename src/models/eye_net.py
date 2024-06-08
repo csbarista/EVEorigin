@@ -101,6 +101,7 @@ class EyeNet(nn.Module):
             input_image = output_dict[side + '_eye_patch']
         else:
             input_image = input_dict[side + '_eye_patch']
+            
 
         # Compute CNN features
         initial_features = self.cnn_layers(input_image)

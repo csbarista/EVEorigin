@@ -120,3 +120,4 @@ training.do_final_full_test(model, test_data, tensorboard)
 
 # Exit without hanging
 training.cleanup_and_quit(train_data, test_data, tensorboard)
+

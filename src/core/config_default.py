@@ -37,7 +37,7 @@ class DefaultConfig(object):
     note = ''
 
     # Data sources
-    datasrc_eve = '/home/luanfuzi/dataset/eve_dataset'
+    datasrc_eve = '/media/linlishi/Extend/EVE/eve_dataset'
 
     # Data loading
     video_decoder_codec = 'libx264'  # libx264 | nvdec
